@@ -157,6 +157,17 @@ class ComputerVisionService:
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             
+            # Center Product Region of Interest (ROI) - Ignores background wall colors
+            roi_hsv = hsv[int(h_f*0.2):int(h_f*0.8), int(w_f*0.2):int(w_f*0.8)]
+            roi_gray = gray[int(h_f*0.2):int(h_f*0.8), int(w_f*0.2):int(w_f*0.8)]
+            
+            if roi_hsv.size > 0:
+                green_mask_center = cv2.inRange(roi_hsv, (35, 50, 50), (85, 255, 255))
+                green_ratio = float(np.mean(green_mask_center > 0))
+            else:
+                green_mask = cv2.inRange(hsv, (35, 50, 50), (85, 255, 255))
+                green_ratio = float(np.mean(green_mask > 0))
+
             edges = cv2.Canny(gray, 50, 150)
             edge_density = float(np.mean(edges > 0))
             
@@ -164,21 +175,25 @@ class ComputerVisionService:
             sobel_y = cv2.Sobel(gray, cv2.CV_32F, 0, 1, ksize=3)
             edge_grid_score = float((np.mean(abs(sobel_x)) + np.mean(abs(sobel_y))) / 255.0)
 
-            green_mask = cv2.inRange(hsv, (35, 50, 50), (85, 255, 255))
-            green_ratio = float(np.mean(green_mask > 0))
+            # Footwear Sole-to-Upper Contrast Check
+            bot_half_roi = roi_gray[int(roi_gray.shape[0]*0.5):, :] if roi_gray.size > 0 else gray[h_f//2:, :]
+            top_half_roi = roi_gray[:int(roi_gray.shape[0]*0.5), :] if roi_gray.size > 0 else gray[:h_f//2, :]
+            sole_contrast = float(abs(np.mean(bot_half_roi) - np.mean(top_half_roi)) / 255.0)
 
-            # Detect Laptops, MacBooks, Keyboards, Screens, Monitors, Phones:
-            # Laptops feature high keyboard/screen edge density, rectangular screen frame, and green_ratio < 0.15
+            # 1. Electronics Check (Laptops, MacBooks, Keyboards, Screens, Phones)
             is_electronics = (edge_grid_score > 0.035 and aspect_ratio >= 0.95) or \
                              (edge_density > 0.035 and aspect_ratio >= 1.05) or \
                              (aspect_ratio >= 1.15 and edge_grid_score > 0.025)
 
+            # 2. Footwear / Shoes Check (Sneakers, Boots, Cleats - sole contrast & footwear aspect ratio)
+            is_shoes = (sole_contrast > 0.07 and aspect_ratio >= 0.95) or (aspect_ratio >= 1.20)
+
             if is_electronics and green_ratio < 0.15:
                 cat_scores["electronics"] += 5.0
-            elif green_ratio > 0.08 or (np.mean(cv2.inRange(hsv, (15, 80, 80), (85, 255, 255)) > 0) > 0.20):
+            elif is_shoes and green_ratio < 0.15:
+                cat_scores["shoes"] += 5.0
+            elif green_ratio > 0.08 or (np.mean(cv2.inRange(roi_hsv if roi_hsv.size > 0 else hsv, (15, 80, 80), (85, 255, 255)) > 0) > 0.20):
                 cat_scores["groceries"] += 5.0
-            elif aspect_ratio >= 1.28:
-                cat_scores["shoes"] += 4.5
             elif aspect_ratio < 0.88:
                 cat_scores["bags"] += 4.5
             else:
