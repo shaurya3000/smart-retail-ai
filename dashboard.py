@@ -8,6 +8,15 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Import direct pipeline as fallback for Cloud deployment / Standalone execution
+try:
+    from app.pipeline import pipeline
+    pipeline.initialize()
+    PIPELINE_AVAILABLE = True
+except Exception as p_err:
+    PIPELINE_AVAILABLE = False
+    print(f"Pipeline import warning: {p_err}")
+
 # Set Page Configuration
 st.set_page_config(
     page_title="Smart Retail Intelligence Platform",
@@ -62,11 +71,81 @@ st.markdown("""
         font-size: 0.85rem;
         font-weight: 600;
     }
+    .badge-standalone {
+        background-color: #3B82F6;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # API Base URL
 API_URL = "http://127.0.0.1:8000"
+
+# Service Helpers with automatic Direct Pipeline Fallback for Streamlit Cloud
+def fetch_recognize_face(img_bytes):
+    try:
+        response = requests.post(f"{API_URL}/recognize-face", files={"file": ("face.jpg", img_bytes, "image/jpeg")}, timeout=2)
+        if response.status_code == 200:
+            return response.json()
+    except Exception:
+        pass
+    if PIPELINE_AVAILABLE:
+        return pipeline.recognize_face(img_bytes)
+    raise RuntimeError("Service unavailable")
+
+def fetch_classify_product(img_bytes):
+    try:
+        response = requests.post(f"{API_URL}/classify-product", files={"file": ("product.jpg", img_bytes, "image/jpeg")}, timeout=2)
+        if response.status_code == 200:
+            return response.json()
+    except Exception:
+        pass
+    if PIPELINE_AVAILABLE:
+        return pipeline.classify_product(img_bytes)
+    raise RuntimeError("Service unavailable")
+
+def fetch_analyze_sentiment(text):
+    try:
+        response = requests.post(f"{API_URL}/analyze-sentiment", json={"text": text}, timeout=2)
+        if response.status_code == 200:
+            return response.json()
+    except Exception:
+        pass
+    if PIPELINE_AVAILABLE:
+        return pipeline.analyze_sentiment(text)
+    raise RuntimeError("Service unavailable")
+
+def fetch_chatbot_reply(msg):
+    try:
+        response = requests.post(f"{API_URL}/chatbot", json={"message": msg}, timeout=2)
+        if response.status_code == 200:
+            return response.json()
+    except Exception:
+        pass
+    if PIPELINE_AVAILABLE:
+        res = pipeline.process_chat(msg)
+        return {
+            "bot_reply": res["reply"],
+            "strategy_used": res["strategy"],
+            "intent": res["intent"],
+            "confidence": res["confidence"]
+        }
+    raise RuntimeError("Service unavailable")
+
+def fetch_dashboard_stats():
+    try:
+        response = requests.get(f"{API_URL}/dashboard/stats", timeout=2)
+        if response.status_code == 200:
+            return response.json()
+    except Exception:
+        pass
+    if PIPELINE_AVAILABLE:
+        return pipeline.get_aggregate_stats()
+    raise RuntimeError("Service unavailable")
 
 # Header Section
 col_title, col_status = st.columns([3, 1])
@@ -76,13 +155,13 @@ with col_title:
 
 with col_status:
     try:
-        r = requests.get(f"{API_URL}/health", timeout=2)
+        r = requests.get(f"{API_URL}/health", timeout=1)
         if r.status_code == 200:
             st.markdown('<br><span class="badge-healthy">🟢 API Gateway Online</span>', unsafe_allow_html=True)
         else:
-            st.warning("⚠️ API Gateway Warning")
+            st.markdown('<br><span class="badge-standalone">⚡ Standalone Cloud Mode</span>', unsafe_allow_html=True)
     except Exception:
-        st.info("ℹ️ Local Mode (Direct Service)")
+        st.markdown('<br><span class="badge-standalone">⚡ Standalone Cloud Mode</span>', unsafe_allow_html=True)
 
 st.divider()
 
@@ -132,7 +211,6 @@ if page == "👤 Face Recognition & Check-In":
                     "New Guest / Unrecognized"
                 ]
             )
-            # Create a simple colored face placeholder image dynamically for test demo
             img = Image.new('RGB', (300, 300), color=(73, 109, 137))
             buf = io.BytesIO()
             img.save(buf, format='JPEG')
@@ -155,29 +233,24 @@ if page == "👤 Face Recognition & Check-In":
         if img_bytes and st.button("Run Face Recognition Pipeline", type="primary"):
             with st.spinner("Analyzing facial features and querying database..."):
                 try:
-                    response = requests.post(f"{API_URL}/recognize-face", files={"file": ("face.jpg", img_bytes, "image/jpeg")})
-                    if response.status_code == 200:
-                        data = response.json()
-                        
-                        if data["status"] == "recognized":
-                            st.success(f"🎉 **{data['message']}**")
-                        else:
-                            st.info(f"👋 **{data['message']}**")
-                            
-                        st.json({
-                            "Status": data["status"],
-                            "Customer ID": data["customer_id"],
-                            "Name": data["name"],
-                            "Loyalty Tier": data["loyalty_tier"],
-                            "Recognition Confidence": f"{data['confidence']*100:.1f}%",
-                            "Total Store Visits": data["total_visits"],
-                            "Last Visit Timestamp": data["last_visit"],
-                            "Biometric Consent Granted": data["consent_granted"]
-                        })
+                    data = fetch_recognize_face(img_bytes)
+                    if data["status"] == "recognized":
+                        st.success(f"🎉 **{data['message']}**")
                     else:
-                        st.error("Error executing API request.")
+                        st.info(f"👋 **{data['message']}**")
+                        
+                    st.json({
+                        "Status": data["status"],
+                        "Customer ID": data["customer_id"],
+                        "Name": data["name"],
+                        "Loyalty Tier": data["loyalty_tier"],
+                        "Recognition Confidence": f"{data['confidence']*100:.1f}%",
+                        "Total Store Visits": data["total_visits"],
+                        "Last Visit Timestamp": data["last_visit"],
+                        "Biometric Consent Granted": data["consent_granted"]
+                    })
                 except Exception as ex:
-                    st.error(f"Could not connect to FastAPI server at {API_URL}. Ensure server is running.")
+                    st.error(f"Error executing face recognition: {ex}")
 
 # -----------------------------------------------------------------------------
 # Module 2: Product Category Classifier
@@ -193,7 +266,6 @@ elif page == "🛍️ Product Category Classifier":
         uploaded_file = st.file_uploader("Upload product picture...", type=["jpg", "jpeg", "png"])
         
         if uploaded_file is None:
-            # Demo default
             st.info("💡 Upload any product image, or click below to run test classification.")
             img = Image.new('RGB', (224, 224), color=(120, 80, 200))
             buf = io.BytesIO()
@@ -209,22 +281,17 @@ elif page == "🛍️ Product Category Classifier":
         if st.button("Classify Product Image", type="primary"):
             with st.spinner("Extracting visual features & evaluating classifier..."):
                 try:
-                    response = requests.post(f"{API_URL}/classify-product", files={"file": ("product.jpg", img_bytes, "image/jpeg")})
-                    if response.status_code == 200:
-                        data = response.json()
-                        
-                        st.markdown(f"### Predicted Category: **{data['predicted_category'].upper()}**")
-                        st.markdown(f"Confidence Score: **{data['confidence']*100:.1f}%**")
-                        
-                        st.subheader("Category Probability Breakdown:")
-                        df_probs = pd.DataFrame(list(data["all_probabilities"].items()), columns=["Category", "Probability"])
-                        df_probs["Probability"] = df_probs["Probability"] * 100
-                        
-                        st.bar_chart(df_probs.set_index("Category"))
-                    else:
-                        st.error("API call failed.")
+                    data = fetch_classify_product(img_bytes)
+                    st.markdown(f"### Predicted Category: **{data['predicted_category'].upper()}**")
+                    st.markdown(f"Confidence Score: **{data['confidence']*100:.1f}%**")
+                    
+                    st.subheader("Category Probability Breakdown:")
+                    df_probs = pd.DataFrame(list(data["all_probabilities"].items()), columns=["Category", "Probability"])
+                    df_probs["Probability"] = df_probs["Probability"] * 100
+                    
+                    st.bar_chart(df_probs.set_index("Category"))
                 except Exception as ex:
-                    st.error(f"Connection error: {ex}")
+                    st.error(f"Classification error: {ex}")
 
 # -----------------------------------------------------------------------------
 # Module 3: Sentiment Analysis Engine
@@ -252,31 +319,26 @@ elif page == "💬 Sentiment Analysis Engine":
     if st.button("Analyze Sentiment", type="primary"):
         with st.spinner("Executing NLP cleaning pipeline & predicting sentiment..."):
             try:
-                res = requests.post(f"{API_URL}/analyze-sentiment", json={"text": user_review})
-                if res.status_code == 200:
-                    data = res.json()
+                data = fetch_analyze_sentiment(user_review)
+                col_res1, col_res2 = st.columns(2)
+                with col_res1:
+                    if data["sentiment"] == "positive":
+                        st.success(f"### Sentiment: POSITIVE 😄")
+                    elif data["sentiment"] == "negative":
+                        st.error(f"### Sentiment: NEGATIVE 😞")
+                    else:
+                        st.warning(f"### Sentiment: NEUTRAL 😐")
+                    st.metric("Confidence Score", f"{data['confidence']*100:.1f}%")
                     
-                    col_res1, col_res2 = st.columns(2)
-                    with col_res1:
-                        if data["sentiment"] == "positive":
-                            st.success(f"### Sentiment: POSITIVE 😄")
-                        elif data["sentiment"] == "negative":
-                            st.error(f"### Sentiment: NEGATIVE 😞")
-                        else:
-                            st.warning(f"### Sentiment: NEUTRAL 😐")
-                        st.metric("Confidence Score", f"{data['confidence']*100:.1f}%")
-                        
-                    with col_res2:
-                        st.markdown("**NLP Preprocessing Pipeline:**")
-                        st.code(f"Raw Input: '{data['raw_text']}'\nCleaned Tokens: '{data['cleaned_text']}'")
-                        
-                    st.subheader("Sentiment Probability Breakdown:")
-                    df_s = pd.DataFrame(list(data["probabilities"].items()), columns=["Sentiment", "Probability"])
-                    st.bar_chart(df_s.set_index("Sentiment"))
-                else:
-                    st.error("API error.")
+                with col_res2:
+                    st.markdown("**NLP Preprocessing Pipeline:**")
+                    st.code(f"Raw Input: '{data['raw_text']}'\nCleaned Tokens: '{data['cleaned_text']}'")
+                    
+                st.subheader("Sentiment Probability Breakdown:")
+                df_s = pd.DataFrame(list(data["probabilities"].items()), columns=["Sentiment", "Probability"])
+                st.bar_chart(df_s.set_index("Sentiment"))
             except Exception as ex:
-                st.error(f"Error connecting to server: {ex}")
+                st.error(f"Error processing sentiment: {ex}")
 
 # -----------------------------------------------------------------------------
 # Module 4: AI Retail Support Chatbot
@@ -285,20 +347,17 @@ elif page == "🤖 AI Retail Support Chatbot":
     st.header("🤖 AI Retail Customer Support Assistant")
     st.write("Test our hybrid chatbot combining **Rule-based FAQ matching** with an **ML Intent Classifier fallback**.")
     
-    # Initialize Chat History
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = [
             {"role": "assistant", "content": "Hello! I am your AI Smart Retail Assistant. How can I help you today with orders, returns, shipping, or store info?"}
         ]
 
-    # Render Chat History
     for msg in st.session_state.chat_history:
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
             if "meta" in msg:
                 st.caption(f"Strategy: {msg['meta']['strategy']} | Intent: `{msg['meta']['intent']}` | Confidence: {msg['meta']['confidence']*100:.0f}%")
 
-    # Quick prompt buttons
     st.caption("Quick FAQ Prompts:")
     q_cols = st.columns(4)
     quick_query = None
@@ -316,20 +375,18 @@ elif page == "🤖 AI Retail Support Chatbot":
             st.write(prompt)
             
         try:
-            res = requests.post(f"{API_URL}/chatbot", json={"message": prompt})
-            if res.status_code == 200:
-                data = res.json()
-                bot_reply = data["bot_reply"]
-                meta = {
-                    "strategy": data["strategy_used"],
-                    "intent": data["intent"],
-                    "confidence": data["confidence"]
-                }
-                
-                st.session_state.chat_history.append({"role": "assistant", "content": bot_reply, "meta": meta})
-                with st.chat_message("assistant"):
-                    st.write(bot_reply)
-                    st.caption(f"Strategy: {meta['strategy']} | Intent: `{meta['intent']}` | Confidence: {meta['confidence']*100:.0f}%")
+            data = fetch_chatbot_reply(prompt)
+            bot_reply = data["bot_reply"]
+            meta = {
+                "strategy": data["strategy_used"],
+                "intent": data["intent"],
+                "confidence": data["confidence"]
+            }
+            
+            st.session_state.chat_history.append({"role": "assistant", "content": bot_reply, "meta": meta})
+            with st.chat_message("assistant"):
+                st.write(bot_reply)
+                st.caption(f"Strategy: {meta['strategy']} | Intent: `{meta['intent']}` | Confidence: {meta['confidence']*100:.0f}%")
         except Exception as ex:
             st.error(f"Error querying chatbot: {ex}")
 
@@ -341,46 +398,44 @@ elif page == "📊 Executive Intelligence Dashboard":
     st.write("Real-time telemetry and aggregate customer insights across all deployed AI modules.")
     
     try:
-        res = requests.get(f"{API_URL}/dashboard/stats")
-        if res.status_code == 200:
-            stats = res.json()
-            
-            # Metric Cards
-            mcol1, mcol2, mcol3, mcol4 = st.columns(4)
-            with mcol1:
-                st.markdown(f'<div class="metric-card"><div class="metric-value">{stats["total_customer_visits"]}</div><div class="metric-label">Total Store Visits</div></div>', unsafe_allow_html=True)
-            with mcol2:
-                st.markdown(f'<div class="metric-card"><div class="metric-value">{stats["unique_recognized_customers"]}</div><div class="metric-label">Registered Customers</div></div>', unsafe_allow_html=True)
-            with mcol3:
-                st.markdown(f'<div class="metric-card"><div class="metric-value">{stats["chatbot_query_count"]}</div><div class="metric-label">Chatbot Queries</div></div>', unsafe_allow_html=True)
-            with mcol4:
-                st.markdown(f'<div class="metric-card"><div class="metric-value">{stats["system_status"]}</div><div class="metric-label">Pipeline Status</div></div>', unsafe_allow_html=True)
+        stats = fetch_dashboard_stats()
+        
+        # Metric Cards
+        mcol1, mcol2, mcol3, mcol4 = st.columns(4)
+        with mcol1:
+            st.markdown(f'<div class="metric-card"><div class="metric-value">{stats["total_customer_visits"]}</div><div class="metric-label">Total Store Visits</div></div>', unsafe_allow_html=True)
+        with mcol2:
+            st.markdown(f'<div class="metric-card"><div class="metric-value">{stats["unique_recognized_customers"]}</div><div class="metric-label">Registered Customers</div></div>', unsafe_allow_html=True)
+        with mcol3:
+            st.markdown(f'<div class="metric-card"><div class="metric-value">{stats["chatbot_query_count"]}</div><div class="metric-label">Chatbot Queries</div></div>', unsafe_allow_html=True)
+        with mcol4:
+            st.markdown(f'<div class="metric-card"><div class="metric-value">{stats["system_status"]}</div><div class="metric-label">Pipeline Status</div></div>', unsafe_allow_html=True)
 
-            st.divider()
+        st.divider()
+        
+        # Analytics Charts
+        c1, c2 = st.columns(2)
+        
+        with c1:
+            st.subheader("Customer Feedback Sentiment Distribution")
+            sent_data = stats["sentiment_summary"]
+            df_sent = pd.DataFrame(list(sent_data.items()), columns=["Sentiment", "Count"])
+            st.bar_chart(df_sent.set_index("Sentiment"))
             
-            # Analytics Charts
-            c1, c2 = st.columns(2)
-            
-            with c1:
-                st.subheader("Customer Feedback Sentiment Distribution")
-                sent_data = stats["sentiment_summary"]
-                df_sent = pd.DataFrame(list(sent_data.items()), columns=["Sentiment", "Count"])
-                st.bar_chart(df_sent.set_index("Sentiment"))
-                
-            with c2:
-                st.subheader("Top Chatbot FAQ Inquiries")
-                top_faqs = stats.get("top_faq_intents", [])
-                if top_faqs:
-                    df_faqs = pd.DataFrame(top_faqs)
-                    st.dataframe(df_faqs, use_container_width=True)
-                else:
-                    st.info("No query logs accumulated yet.")
+        with c2:
+            st.subheader("Top Chatbot FAQ Inquiries")
+            top_faqs = stats.get("top_faq_intents", [])
+            if top_faqs:
+                df_faqs = pd.DataFrame(top_faqs)
+                st.dataframe(df_faqs, use_container_width=True)
+            else:
+                st.info("No query logs accumulated yet.")
 
-            st.divider()
-            st.subheader("Recent Customer Visit Telemetry")
-            if stats["recent_visits"]:
-                df_visits = pd.DataFrame(stats["recent_visits"])
-                st.dataframe(df_visits, use_container_width=True)
+        st.divider()
+        st.subheader("Recent Customer Visit Telemetry")
+        if stats["recent_visits"]:
+            df_visits = pd.DataFrame(stats["recent_visits"])
+            st.dataframe(df_visits, use_container_width=True)
 
     except Exception as ex:
-        st.error(f"Unable to load live dashboard stats from API. Details: {ex}")
+        st.error(f"Unable to load live dashboard stats: {ex}")
