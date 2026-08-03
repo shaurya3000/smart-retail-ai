@@ -85,12 +85,12 @@ def extract_visual_feature_vector(img: np.ndarray) -> np.ndarray:
     red_mask2 = cv2.inRange(hsv, (170, 50, 50), (180, 255, 255))
     red_mask = red_mask1 | red_mask2
     
-    green_ratio = np.mean(green_mask > 0)
-    red_ratio = np.mean(red_mask > 0)
+    blue_mask = cv2.inRange(hsv, (95, 50, 50), (135, 255, 255))
+    blue_ratio = np.mean(blue_mask > 0)
     
     feats = np.concatenate([
         h_hist, s_hist, v_hist,
-        [aspect_ratio, sole_contrast, edge_density, green_ratio, red_ratio, top_bright/255.0, bot_bright/255.0, 0.0]
+        [aspect_ratio, sole_contrast, edge_density, green_ratio, red_ratio, top_bright/255.0, bot_bright/255.0, blue_ratio]
     ])
     return feats[:32]
 
