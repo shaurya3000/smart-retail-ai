@@ -21,10 +21,14 @@ from typing import Dict, Any, List, Tuple, Optional
 from app.config import settings
 from app.services import cv_utils
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+MODELS_DIR = os.path.join(BASE_DIR, "app", "models")
+
 class ComputerVisionService:
     def __init__(self):
         self.mobilenet = None
         self.transform = None
+        self.ml_classifier = None
         self.face_db = []
         self.customer_visits = {}
         self.loaded = False
@@ -54,11 +58,11 @@ class ComputerVisionService:
         }
 
     def load_models(self):
-        """Loads MobileNetV2 transfer learning model into memory once at startup."""
+        """Loads Deep Learning & ML Transfer models into memory once at startup."""
         if self.loaded:
             return
             
-        print("[CV Service] Loading MobileNetV2 Deep Learning Model for Transfer Learning...")
+        print("[CV Service] Loading Product Classifier Models...")
         if TORCH_AVAILABLE:
             try:
                 self.mobilenet = models.mobilenet_v2(weights=models.MobileNet_V2_Weights.DEFAULT)
@@ -72,6 +76,15 @@ class ComputerVisionService:
                 print("[CV Service] MobileNetV2 initialized successfully!")
             except Exception as e:
                 print(f"[CV Service] Warning loading MobileNetV2: {e}")
+
+        # Load Scikit-Learn Visual Feature Classifier
+        ml_model_path = os.path.join(MODELS_DIR, "product_classifier.pkl")
+        if os.path.exists(ml_model_path):
+            try:
+                self.ml_classifier = joblib.load(ml_model_path)
+                print("[CV Service] Loaded ML Product Classifier (product_classifier.pkl)")
+            except Exception as me:
+                print(f"[CV Service] Warning loading ml_classifier: {me}")
 
         if os.path.exists(settings.FACE_DB_PATH):
             try:
@@ -87,7 +100,6 @@ class ComputerVisionService:
             except Exception as ve:
                 print(f"[CV Service] Error loading customer_visits: {ve}")
         else:
-            # Default fallback visit registry if file missing
             self.customer_visits = {
                 "CUST_1001": {"name": "Alice Smith", "visit_count": 12, "last_visit": "2026-08-03 14:20:11", "loyalty_tier": "Gold"},
                 "CUST_1002": {"name": "Bob Johnson", "visit_count": 37, "last_visit": "2026-08-03 21:29:01", "loyalty_tier": "Platinum"},
@@ -99,8 +111,8 @@ class ComputerVisionService:
 
     def classify_product(self, img_bytes: bytes) -> Dict[str, Any]:
         """
-        Classifies product image using PyTorch MobileNetV2 Deep Transfer Learning.
-        Maps ImageNet predictions to retail categories with high accuracy.
+        Classifies product image using ML Visual Feature Classifier / MobileNetV2.
+        Maps image features to retail categories (groceries, electronics, shoes, bags, clothing) with high accuracy.
         """
         self.load_models()
         img_pil = Image.open(io.BytesIO(img_bytes)).convert("RGB")
@@ -108,6 +120,10 @@ class ComputerVisionService:
         
         categories = ["clothing", "shoes", "electronics", "bags", "groceries"]
         cat_scores = {cat: 0.01 for cat in categories}
+        
+        # Decode OpenCV Frame
+        nparr = np.frombuffer(img_bytes, np.uint8)
+        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         
         if TORCH_AVAILABLE and self.mobilenet is not None and self.transform is not None:
             tensor = self.transform(img_pil).unsqueeze(0)
@@ -132,11 +148,17 @@ class ComputerVisionService:
                         
                 if not matched:
                     cat_scores["clothing"] += p_val * 0.05
-        else:
-            # OpenCV Visual Feature Classifier (Aspect ratio, edge density, color histograms)
-            nparr = np.frombuffer(img_bytes, np.uint8)
-            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                    
+        elif self.ml_classifier is not None and frame is not None:
+            # 32D Visual Feature Extraction Pipeline
+            feat_vec = cv_utils.extract_visual_feature_vector(frame).reshape(1, -1)
+            probs = self.ml_classifier.predict_proba(feat_vec)[0]
             
+            for idx, cat in enumerate(categories):
+                if idx < len(probs):
+                    cat_scores[cat] = float(probs[idx])
+        else:
+            # OpenCV Visual Feature Heuristic Classifier
             if frame is not None:
                 h_f, w_f = frame.shape[:2]
                 aspect_ratio = float(w_f) / float(h_f) if h_f > 0 else 1.0
@@ -155,20 +177,20 @@ class ComputerVisionService:
                 green_ratio = np.mean(green_mask > 0)
                 red_ratio = np.mean(red_mask > 0)
                 
-                # Check for Electronics (Laptop, Screen, Keyboard, Phone, Monitor)
-                # Laptops feature rectangular screen geometry, keyboard grid edges, metallic/dark tones
-                if (aspect_ratio >= 1.05 and edge_density > 0.03) or (aspect_ratio >= 1.25):
-                    cat_scores["electronics"] = 0.95
-                    cat_scores["clothing"] = 0.02
-                    cat_scores["shoes"] = 0.01
-                    cat_scores["bags"] = 0.01
-                    cat_scores["groceries"] = 0.01
-                elif green_ratio > 0.04 or red_ratio > 0.08:
+                # High Produce Green/Red Ratio -> GROCERIES
+                if green_ratio > 0.04 or red_ratio > 0.08:
                     cat_scores["groceries"] = 0.95
                     cat_scores["clothing"] = 0.02
                     cat_scores["shoes"] = 0.01
                     cat_scores["bags"] = 0.01
                     cat_scores["electronics"] = 0.01
+                # Metallic Grid Edges & Rectangular Geometry -> ELECTRONICS
+                elif (aspect_ratio >= 1.05 and edge_density > 0.04) or (aspect_ratio >= 1.25 and edge_density > 0.03):
+                    cat_scores["electronics"] = 0.95
+                    cat_scores["clothing"] = 0.02
+                    cat_scores["shoes"] = 0.01
+                    cat_scores["bags"] = 0.01
+                    cat_scores["groceries"] = 0.01
                 elif aspect_ratio > 1.3:
                     cat_scores["shoes"] = 0.94
                     cat_scores["clothing"] = 0.03
@@ -187,8 +209,6 @@ class ComputerVisionService:
                     cat_scores["electronics"] = 0.02
                     cat_scores["bags"] = 0.01
                     cat_scores["groceries"] = 0.01
-            else:
-                cat_scores["electronics"] = 0.95
 
         total_score = sum(cat_scores.values())
         prob_dict = {cat: round(score / total_score, 4) for cat, score in cat_scores.items()}
@@ -218,7 +238,7 @@ class ComputerVisionService:
             "processing_metadata": {
                 "image_width": w,
                 "image_height": h,
-                "model_version": "MobileNetV2-TransferLearning-v1.0"
+                "model_version": "SmartRetail-VisualFeature-ML-v2.0"
             }
         }
 
