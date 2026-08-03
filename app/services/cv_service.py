@@ -180,24 +180,23 @@ class ComputerVisionService:
             top_half_roi = roi_gray[:int(roi_gray.shape[0]*0.5), :] if roi_gray.size > 0 else gray[:h_f//2, :]
             sole_contrast = float(abs(np.mean(bot_half_roi) - np.mean(top_half_roi)) / 255.0)
 
-            # 1. Electronics Check (Laptops, MacBooks, Keyboards, Screens, Phones)
-            is_electronics = (edge_grid_score > 0.035 and aspect_ratio >= 0.95) or \
-                             (edge_density > 0.035 and aspect_ratio >= 1.05) or \
-                             (aspect_ratio >= 1.15 and edge_grid_score > 0.025)
+            # 1. Footwear / Shoes Check (Sneakers, Boots, Footwear, Sandals - sole contrast & footwear geometry)
+            is_shoes = (sole_contrast > 0.04 and aspect_ratio >= 0.85) or (aspect_ratio >= 1.22)
 
-            # 2. Footwear / Shoes Check (Sneakers, Boots, Cleats, Sandals - sole contrast & footwear aspect ratio)
-            is_shoes = (sole_contrast > 0.05 and aspect_ratio >= 0.90) or (aspect_ratio >= 1.15)
+            # 2. Electronics Check (Laptops, MacBooks, Keyboards, Screens, Monitors, Phones)
+            is_electronics = ((edge_grid_score > 0.04 and aspect_ratio >= 1.0) or \
+                              (edge_density > 0.04 and aspect_ratio >= 1.10)) and not is_shoes
 
-            # 3. Genuine Produce Green Vegetables & Fruits Check (Excludes brown/tan floors)
+            # 3. Genuine Produce Green Vegetables & Fruits Check
             is_groceries = (green_ratio > 0.08)
 
-            if is_electronics and green_ratio < 0.15:
-                cat_scores["electronics"] += 5.0
-            elif is_shoes and green_ratio < 0.15:
+            if is_shoes and green_ratio < 0.15:
                 cat_scores["shoes"] += 5.0
+            elif is_electronics and green_ratio < 0.15:
+                cat_scores["electronics"] += 5.0
             elif is_groceries:
                 cat_scores["groceries"] += 5.0
-            elif aspect_ratio < 0.88:
+            elif aspect_ratio < 0.85:
                 cat_scores["bags"] += 4.5
             else:
                 cat_scores["clothing"] += 4.0
