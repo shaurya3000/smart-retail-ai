@@ -2,8 +2,9 @@
 
 **Project Title**: AI-Powered Smart Retail & Customer Intelligence Platform  
 **Presenter**: Shaurya  
+**Live Deployed Web App**: [https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/](https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/)  
 **GitHub Repository**: [https://github.com/shaurya3000/smart-retail-ai](https://github.com/shaurya3000/smart-retail-ai)  
-**PowerPoint File with Embedded UI Screenshots**: `Smart_Retail_Platform_Demo_Presentation.pptx`
+**PowerPoint File with Embedded UI Screenshots**: `Smart_Retail_Platform_Presentation_Final.pptx`
 
 ---
 
@@ -13,7 +14,8 @@
 - **Header**: LIVE DEMO CAPSTONE PRESENTATION
 - **Title**: AI-Powered Smart Retail & Customer Intelligence Platform
 - **Subtitle**: Live Demonstration & System Walkthrough | CV, NLP, Chatbot & MLOps
-- **Presenter**: Shaurya | Status: 100% Verified & Tested
+- **Live Web App URL**: [https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/](https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/)
+- **Presenter**: Shaurya | Status: 100% Verified & Deployed
 
 ---
 
@@ -45,7 +47,7 @@
 
 ### Slide 4: Module B - AI Retail Support Chatbot Assistant
 
-![AI Retail Customer Support Assistant](assets/screenshots/chatbot_assistant.png)
+![AI Retail Support Chatbot Assistant](assets/screenshots/chatbot_assistant.png)
 
 - **Live Chat Session Demo**:
   - User Prompt: `"Where is my order?"`

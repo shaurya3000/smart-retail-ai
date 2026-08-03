@@ -81,6 +81,7 @@ def build_new_pptx():
     BG_COLOR = RGBColor(15, 23, 42)
     CARD_BG = RGBColor(30, 41, 59)
     TEXT_PRIMARY = RGBColor(248, 250, 252)
+    TEXT_MUTED = RGBColor(148, 163, 184)
     ACCENT_BLUE = RGBColor(56, 189, 248)
     ACCENT_PURPLE = RGBColor(192, 132, 252)
     ACCENT_GREEN = RGBColor(52, 211, 153)
@@ -127,9 +128,16 @@ def build_new_pptx():
     tx2 = s1.shapes.add_textbox(Inches(1.2), Inches(3.8), Inches(11.0), Inches(1.0))
     tf2 = tx2.text_frame
     p2 = tf2.paragraphs[0]
-    p2.text = "Complete Capstone Presentation Deck: Technical Architecture, Explanations & Live Screenshots"
-    p2.font.size = Pt(18)
-    p2.font.color.rgb = ACCENT_PURPLE
+    p2.text = "Live Web App: https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/"
+    p2.font.size = Pt(16)
+    p2.font.color.rgb = ACCENT_GREEN
+
+    tx3 = s1.shapes.add_textbox(Inches(1.2), Inches(5.2), Inches(11.0), Inches(1.0))
+    tf3 = tx3.text_frame
+    p3 = tf3.paragraphs[0]
+    p3.text = "Presenter: Shaurya | Stack: OpenCV, PyTorch MobileNetV2, TF-IDF NLP, FastAPI, Streamlit, Docker | Status: 100% Deployed"
+    p3.font.size = Pt(12)
+    p3.font.color.rgb = TEXT_MUTED
 
     # Slide 2: Problem & Solution
     s2 = prs.slides.add_slide(blank_layout)
@@ -180,7 +188,7 @@ def build_new_pptx():
         p_pt.font.size = Pt(12)
         p_pt.font.color.rgb = TEXT_PRIMARY
 
-    # Slide 3: Module A - Face Recognition (Explanation + Screenshot Picture)
+    # Slide 3: Module A - Face Recognition
     s3 = prs.slides.add_slide(blank_layout)
     set_bg(s3)
     add_header(s3, "2. Module A: Face Recognition & VIP Customer Logger")
@@ -258,7 +266,7 @@ def build_new_pptx():
         p_item.font.size = Pt(12)
         p_item.font.color.rgb = TEXT_PRIMARY
 
-    # Slide 5: Module B - Sentiment NLP Engine (Explanation + Screenshot Picture)
+    # Slide 5: Module B - Sentiment NLP Engine
     s5 = prs.slides.add_slide(blank_layout)
     set_bg(s5)
     add_header(s5, "4. Module B: Customer Feedback Sentiment NLP Engine")
@@ -286,7 +294,7 @@ def build_new_pptx():
         p_pt.font.color.rgb = TEXT_PRIMARY
     s5.shapes.add_picture(os.path.join(ASSETS_DIR, "sentiment_analysis_2.png"), Inches(6.5), Inches(1.5), Inches(6.2), Inches(5.4))
 
-    # Slide 6: Module B - AI Support Chatbot (Explanation + Screenshot Picture)
+    # Slide 6: Module B - AI Support Chatbot
     s6 = prs.slides.add_slide(blank_layout)
     set_bg(s6)
     add_header(s6, "5. Module B: AI Retail Customer Support Assistant")
@@ -314,7 +322,7 @@ def build_new_pptx():
         p_pt.font.color.rgb = TEXT_PRIMARY
     s6.shapes.add_picture(os.path.join(ASSETS_DIR, "chatbot_assistant.png"), Inches(6.5), Inches(1.5), Inches(6.2), Inches(5.4))
 
-    # Slide 7: Module C - Executive Analytics Dashboard (Explanation + Screenshot Picture)
+    # Slide 7: Module C - Executive Analytics Dashboard
     s7 = prs.slides.add_slide(blank_layout)
     set_bg(s7)
     add_header(s7, "6. Module C: Executive Retail Intelligence Dashboard")
@@ -342,13 +350,13 @@ def build_new_pptx():
         p_pt.font.color.rgb = TEXT_PRIMARY
     s7.shapes.add_picture(os.path.join(ASSETS_DIR, "executive_dashboard.png"), Inches(6.5), Inches(1.5), Inches(6.2), Inches(5.4))
 
-    # Save to BOTH file names for maximum convenience
+    # Save to BOTH file names
     out1 = os.path.join(BASE_DIR, "Smart_Retail_Platform_Demo_Presentation.pptx")
     out2 = os.path.join(BASE_DIR, "Smart_Retail_Platform_Presentation_Final.pptx")
     
     prs.save(out1)
     prs.save(out2)
-    print(f"SUCCESS: Saved new presentation files to:\n- {out1}\n- {out2}")
+    print(f"SUCCESS: Saved updated presentation files to:\n- {out1}\n- {out2}")
 
 if __name__ == "__main__":
     build_new_pptx()

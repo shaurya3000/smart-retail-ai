@@ -1,13 +1,13 @@
 # AI-Powered Smart Retail & Customer Intelligence Platform
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Web_App-Click_to_Open-ff4b4b?style=for-the-badge&logo=streamlit)](https://github.com/shaurya3000/smart-retail-ai)
+[![Live Web App](https://img.shields.io/badge/🚀_Live_Web_App-Click_to_Open-ff4b4b?style=for-the-badge&logo=streamlit)](https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/)
 [![FastAPI](https://img.shields.io/badge/API_Gateway-FastAPI-009688?style=for-the-badge&logo=fastapi)](https://github.com/shaurya3000/smart-retail-ai)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python)](https://github.com/shaurya3000/smart-retail-ai)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)](https://github.com/shaurya3000/smart-retail-ai)
 
-> 🌐 **Live Web Application Demo Link**:  
-> Evaluators and reviewers can open the live application or deploy it with 1-click:  
-> 👉 **[https://github.com/shaurya3000/smart-retail-ai](https://github.com/shaurya3000/smart-retail-ai)**
+> 🌐 **Live Web Application URL**:  
+> Evaluators and reviewers can open and interact with the live deployed application in 1-click:  
+> 👉 **[https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/](https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/)**
 
 ---
 
@@ -76,6 +76,7 @@ Real-time executive dashboard monitoring total store visits, registered VIP cust
 
 ## 📊 3. Project Presentation Deliverables
 
+- 🌐 **Live Web Application**: [https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/](https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/)
 - 📄 **Slide-by-Slide Presentation Report**: [`DEMO_PRESENTATION.md`](https://github.com/shaurya3000/smart-retail-ai/blob/master/DEMO_PRESENTATION.md)
 - 📊 **Downloadable PowerPoint Deck**: [`Smart_Retail_Platform_Presentation_Final.pptx`](https://github.com/shaurya3000/smart-retail-ai/raw/master/Smart_Retail_Platform_Presentation_Final.pptx)
 
@@ -83,7 +84,12 @@ Real-time executive dashboard monitoring total store visits, registered VIP cust
 
 ## ⚡ 4. Quick Start & Setup Guide for Evaluators
 
-### Option 1: Local Execution (3 Commands)
+### Option 1: Live Cloud Web Access (0 Setup)
+Open **[https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/](https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/)** directly in any web browser.
+
+---
+
+### Option 2: Local Execution (3 Commands)
 ```bash
 # 1. Clone repository
 git clone https://github.com/shaurya3000/smart-retail-ai.git
@@ -100,7 +106,7 @@ Open **[http://localhost:8501](http://localhost:8501)** in any web browser.
 
 ---
 
-### Option 2: 1-Click Docker Container Setup
+### Option 3: 1-Click Docker Container Setup
 ```bash
 git clone https://github.com/shaurya3000/smart-retail-ai.git
 cd smart-retail-ai
