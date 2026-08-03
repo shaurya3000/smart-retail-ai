@@ -3,7 +3,7 @@
 **Project Title**: AI-Powered Smart Retail & Customer Intelligence Platform  
 **Presenter**: Shaurya  
 **GitHub Repository**: [https://github.com/shaurya3000/smart-retail-ai](https://github.com/shaurya3000/smart-retail-ai)  
-**Live website link** : (https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/)
+**Live website link** : (https://smart-retail-ai-a5kksj3kt7ab6xyzqfwx66.streamlit.app/).                                   
    **PowerPoint File**: `Smart_Retail_Platform_Demo_Presentation.pptx`
 
 ---
