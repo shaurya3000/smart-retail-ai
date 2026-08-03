@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: smart_retail_api
+    ports:
+      - "8000:8000"
+    environment:
+      - RETAIL_API_KEY=smart-retail-secret-key-2026
+    volumes:
+      - ./data:/app/data
+      - ./app/models:/app/models
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    restart: always
+
+  dashboard:
+    build: .
+    container_name: smart_retail_dashboard
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    command: streamlit run dashboard.py --server.port=8501 --server.address=0.0.0.0
+    restart: always

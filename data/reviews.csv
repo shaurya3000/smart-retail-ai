@@ -1,0 +1,51 @@
+review_id,review_text,sentiment,rating,product_category
+1,"The quality of this leather jacket is exceptional. Super comfortable and stylish!",positive,5,clothing
+2,"Battery life on this smartwatch is terrible. It died in less than 4 hours.",negative,1,electronics
+3,"These running shoes fit true to size and provide amazing arch support.",positive,5,shoes
+4,"The bag is okay, nothing special. Materials feel a bit cheap for the price.",neutral,3,bags
+5,"Organic apples arrived fresh, crispy, and perfectly packed. Very satisfied!",positive,5,groceries
+6,"Extremely disappointed with this laptop. Screen flickers constantly and customer support was unhelpful.",negative,1,electronics
+7,"Fabric is soft and breathable. Perfect fit for summer wear.",positive,5,clothing
+8,"Delivery took over two weeks and the box was completely damaged.",negative,1,bags
+9,"Decent wireless earbuds for the price. Sound quality is acceptable.",neutral,3,electronics
+10,"Fresh produce every single time. Best online grocery shopping experience!",positive,5,groceries
+11,"Zippers on this handbag broke on the second day. Terrible craftmanship.",negative,1,bags
+12,"Shoe sole detached after one week of light walking. Waste of money.",negative,1,shoes
+13,"Average t-shirt, color faded slightly after the first wash.",neutral,3,clothing
+14,"Blender works well enough for basic smoothies, but struggles with ice.",neutral,3,electronics
+15,"Love these sneakers! Super lightweight, flexible, and great design.",positive,5,shoes
+16,"Vegetables were wilted and some items were missing from the order.",negative,1,groceries
+17,"Beautiful designer tote bag! High quality leather and spacious compartments.",positive,5,bags
+18,"Fit is a bit tighter than expected, but acceptable overall.",neutral,3,clothing
+19,"Noise cancelling on these headphones is top notch! Worth every penny.",positive,5,electronics
+20,"Avocados were bruised and overripe. Will not order groceries online again.",negative,1,groceries
+21,"Stitching came undone on the sleeves after one month.",negative,2,clothing
+22,"Super fast delivery and product matches the description perfectly.",positive,5,electronics
+23,"Comfortable memory foam insoles, great for all-day walking.",positive,5,shoes
+24,"Canvas backpack is decent for school, but lacks internal padding.",neutral,3,bags
+25,"Fresh sourdough bread and artisan cheese arrived cold and fresh.",positive,5,groceries
+26,"Monitor developed dead pixels after 3 days of use.",negative,1,electronics
+27,"Denim jacket is stylish and durable. Fits perfectly!",positive,5,clothing
+28,"Leather wallet is functional, though the color is slightly darker than pictured.",neutral,3,bags
+29,"Running shoes give me blisters every time I run.",negative,1,shoes
+30,"Whole milk and Greek yogurt were fresh and well packaged.",positive,5,groceries
+31,"Smart TV interface is buggy and keeps disconnecting from WiFi.",negative,2,electronics
+32,"Soft wool sweater, keeps me very warm in winter.",positive,5,clothing
+33,"Suitcase handle jammed on my first airport trip. Very poor quality.",negative,1,bags
+34,"Basketball shoes have excellent grip and ankle support.",positive,5,shoes
+35,"Organic eggs were packed safely with zero cracks.",positive,5,groceries
+36,"Camera image quality is average, low-light performance is poor.",neutral,3,electronics
+37,"Pants shrunk dramatically after cold machine wash.",negative,1,clothing
+38,"Laptop sleeve fits my 15-inch laptop nicely.",neutral,4,bags
+39,"Trail running shoes are tough and waterproof. Highly recommended!",positive,5,shoes
+40,"Berries were moldy upon delivery. Very disappointed.",negative,1,groceries
+41,"Power bank charges my phone rapidly. Sleek design.",positive,5,electronics
+42,"Cotton shirt feels comfortable and looks crisp.",positive,5,clothing
+43,"Duffle bag strap is uncomfortable when fully packed.",neutral,2,bags
+44,"Walking boots are durable and support my ankles well.",positive,5,shoes
+45,"Fresh salmon fillets were top quality and delicious.",positive,5,groceries
+46,"Mechanical keyboard keys are smooth and satisfying to type on.",positive,5,electronics
+47,"Dress size ran way too small, could not even zip it up.",negative,1,clothing
+48,"Crossbody bag is light and holds my phone and wallet easily.",positive,4,bags
+49,"Flip flops are cheap and tore apart after two days at the beach.",negative,1,shoes
+50,"Organic olive oil was packaged securely and tastes authentic.",positive,5,groceries

@@ -1,0 +1,283 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "Hi",
+        "Hello",
+        "Hey there",
+        "Good morning",
+        "Good afternoon",
+        "Is anyone there?",
+        "Greetings",
+        "Hey"
+      ],
+      "responses": [
+        "Hello! Welcome to Smart Retail Customer Support. How can I assist you today?",
+        "Hi there! How can I help with your retail or order query today?",
+        "Greetings! I'm your AI shopping assistant. Ask me anything about orders, returns, products, or store info!"
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "Bye",
+        "See you later",
+        "Goodbye",
+        "Have a nice day",
+        "That's all thank you",
+        "Exit",
+        "Quit"
+      ],
+      "responses": [
+        "Thank you for shopping with us! Have a wonderful day!",
+        "Goodbye! Feel free to reach out anytime if you need further help.",
+        "See you next time! Thank you for choosing Smart Retail."
+      ]
+    },
+    {
+      "tag": "order_status",
+      "patterns": [
+        "Where is my order?",
+        "Track my package",
+        "Order status update",
+        "Has my shipment dispatched?",
+        "Can I check my delivery status?",
+        "When will my package arrive?"
+      ],
+      "responses": [
+        "You can track your order status in real time by logging into your account under 'My Orders' or providing your Order ID here.",
+        "To check shipment status, please enter your 8-digit Order Number, or check the tracking link sent to your registered email."
+      ]
+    },
+    {
+      "tag": "return_policy",
+      "patterns": [
+        "What is your return policy?",
+        "How do I return an item?",
+        "Can I refund a product?",
+        "How many days do I have to return?",
+        "Return request process",
+        "Refund policy"
+      ],
+      "responses": [
+        "We offer a hassle-free 30-day return policy! Items must be unused, in original packaging with tags intact. Initiate returns in your account portal.",
+        "Returns are free within 30 days of delivery. Simply go to Account > Returns, print the prepaid label, and drop off your package at any authorized parcel point."
+      ]
+    },
+    {
+      "tag": "exchange_policy",
+      "patterns": [
+        "Can I exchange for a different size?",
+        "How to swap an item?",
+        "Exchange policy for clothing",
+        "I got the wrong size, can I replace it?"
+      ],
+      "responses": [
+        "Yes! We offer free size and color exchanges within 14 days of delivery, subject to inventory availability.",
+        "To initiate an exchange, go to 'My Orders' > 'Exchange Item' and select your preferred replacement size or color."
+      ]
+    },
+    {
+      "tag": "payment_methods",
+      "patterns": [
+        "What payment methods do you accept?",
+        "Can I pay with credit card?",
+        "Do you accept PayPal or Apple Pay?",
+        "Cash on delivery available?",
+        "Payment options"
+      ],
+      "responses": [
+        "We accept Visa, MasterCard, American Express, PayPal, Apple Pay, Google Pay, and Cash on Delivery (COD in select regions).",
+        "You can securely pay via Credit/Debit Cards, PayPal, UPI/Net Banking, Apple Pay, and Buy-Now-Pay-Later (Klarna/Afterpay)."
+      ]
+    },
+    {
+      "tag": "store_hours",
+      "patterns": [
+        "What are your store operating hours?",
+        "When is the store open?",
+        "Store opening times",
+        "Are you open on Sunday?",
+        "Opening hours today"
+      ],
+      "responses": [
+        "Our physical retail stores are open Monday through Saturday from 9:00 AM to 9:00 PM, and Sunday from 10:00 AM to 6:00 PM.",
+        "Store hours: Mon-Sat (9am - 9pm), Sun (10am - 6pm). Our online store and AI support operate 24/7!"
+      ]
+    },
+    {
+      "tag": "shipping_costs",
+      "patterns": [
+        "How much is shipping?",
+        "Do you offer free shipping?",
+        "Shipping charges",
+        "Delivery fee details",
+        "Express shipping cost"
+      ],
+      "responses": [
+        "Standard shipping is FREE on all orders over $50! For orders under $50, standard delivery is $4.99. Express 2-day delivery is $9.99.",
+        "Enjoy Free Delivery on orders exceeding $50. Standard shipping takes 3-5 business days."
+      ]
+    },
+    {
+      "tag": "store_location",
+      "patterns": [
+        "Where are your stores located?",
+        "Find a store near me",
+        "Retail store locations",
+        "Do you have a physical store in London/New York?"
+      ],
+      "responses": [
+        "We have over 50 flagship stores across major cities. Use our Store Locator widget on the website to find the store closest to your zip code!",
+        "Check out our Store Finder page at smartretail.com/stores to locate your nearest branch and view in-store inventory."
+      ]
+    },
+    {
+      "tag": "discounts_promotions",
+      "patterns": [
+        "Are there any promo codes available?",
+        "Do you have sales or discounts?",
+        "Student discount info",
+        "Coupon codes",
+        "First time customer discount"
+      ],
+      "responses": [
+        "Use promo code 'WELCOME10' at checkout for 10% off your first order! We also offer a 15% student discount via UNiDAYS.",
+        "Check our 'Special Offers' section on the homepage for current clearance sales up to 50% off!"
+      ]
+    },
+    {
+      "tag": "membership_loyalty",
+      "patterns": [
+        "How does the loyalty program work?",
+        "Reward points system",
+        "Join VIP membership",
+        "How do I earn points?",
+        "Customer loyalty benefits"
+      ],
+      "responses": [
+        "Our Smart Loyalty Club gives you 1 point for every $1 spent! Redeem 100 points for $5 off. VIP members also enjoy free facial check-in perks in stores.",
+        "Sign up for free today! Earn double points on your birthday month and access exclusive member-only flash sales."
+      ]
+    },
+    {
+      "tag": "product_inquiry",
+      "patterns": [
+        "Do you sell footwear or electronics?",
+        "What categories of products do you have?",
+        "Product catalog info",
+        "Are items in stock?"
+      ],
+      "responses": [
+        "Our smart retail platform features 5 core categories: Clothing, Shoes, Electronics, Bags, and Groceries!",
+        "You can browse our complete catalog online or upload a product picture to our Product Classifier API to find exact category matches."
+      ]
+    },
+    {
+      "tag": "order_cancellation",
+      "patterns": [
+        "Can I cancel my order?",
+        "How to cancel a placed order?",
+        "Cancel shipment",
+        "Stop my order"
+      ],
+      "responses": [
+        "Orders can be canceled within 1 hour of placement directly from 'My Orders' tab. After 1 hour, processing begins and you can request a return upon delivery.",
+        "To request an immediate cancellation, go to Account > Active Orders > Cancel. If already shipped, you can refuse package delivery."
+      ]
+    },
+    {
+      "tag": "damaged_item",
+      "patterns": [
+        "I received a damaged item",
+        "Broken product received",
+        "Defective product delivered",
+        "Package arrived crushed"
+      ],
+      "responses": [
+        "We apologize for the inconvenience! Please upload a picture of the damaged item in 'My Orders' > 'Report Damage' for an immediate free replacement or full refund.",
+        "If your item arrived defective or damaged, contact us with your Order ID and photo proof within 7 days for priority resolution."
+      ]
+    },
+    {
+      "tag": "customer_agent_escalation",
+      "patterns": [
+        "I want to speak to a human agent",
+        "Talk to customer service representative",
+        "Connect me with support representative",
+        "Human help please",
+        "Speak to manager"
+      ],
+      "responses": [
+        "Connecting you to a live retail customer support specialist... Our average wait time is under 2 minutes. Please hold on!",
+        "I am transferring your session to a support agent. You can also call our toll-free customer helpline at 1-800-SMART-RETAIL."
+      ]
+    },
+    {
+      "tag": "warranty_info",
+      "patterns": [
+        "Does electronics come with warranty?",
+        "Product warranty policy",
+        "How long is the warranty period?",
+        "Repair service info"
+      ],
+      "responses": [
+        "All electronic items come with a standard 1-year manufacturer warranty covering hardware defects. Extended warranty options are available at checkout.",
+        "Warranty claims can be submitted via Account > Warranty Claims with your purchase invoice."
+      ]
+    },
+    {
+      "tag": "gift_cards",
+      "patterns": [
+        "Do you sell gift cards?",
+        "How to buy a digital gift card?",
+        "Redeem gift card code",
+        "Gift voucher balance check"
+      ],
+      "responses": [
+        "Yes! Digital gift cards are available from $10 to $500. They are emailed instantly to the recipient and never expire.",
+        "You can redeem gift vouchers at online checkout or present the QR code at any of our retail store cash counters."
+      ]
+    },
+    {
+      "tag": "face_checkin_privacy",
+      "patterns": [
+        "How is facial recognition data stored?",
+        "Is face check-in safe?",
+        "Privacy policy for facial check-in",
+        "Do you store my face image?"
+      ],
+      "responses": [
+        "We prioritize customer privacy! Raw face images are NEVER stored. Only mathematical vector encodings (hash values) are stored in an encrypted database for loyalty check-ins. Consent can be revoked anytime.",
+        "Our facial recognition system is opt-in, GDPR/CCPA compliant, and encrypts all biometric encodings. You can opt-out or delete your biometric profile anytime."
+      ]
+    },
+    {
+      "tag": "feedback_submission",
+      "patterns": [
+        "I want to submit feedback",
+        "Leave a product review",
+        "Rate my experience",
+        "Where to write review?"
+      ],
+      "responses": [
+        "We love hearing from you! You can submit feedback on the product page or use our Sentiment Analysis tool on the dashboard to share your thoughts.",
+        "Your feedback helps us improve! Leave a review on your order history page or directly share your comments with our AI sentiment engine."
+      ]
+    },
+    {
+      "tag": "size_guide",
+      "patterns": [
+        "Where is the size chart?",
+        "How do I choose the right size?",
+        "Sizing guide for clothing and shoes",
+        "Does this fit true to size?"
+      ],
+      "responses": [
+        "Click the 'Size Guide' button on any apparel or footwear product page for exact measurement charts in inches and centimeters.",
+        "Customer reviews also indicate whether products fit 'True to Size', 'Small', or 'Large'!"
+      ]
+    }
+  ]
+}

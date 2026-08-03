@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Retail & Customer Intelligence Platform</title>
+  <meta name="description" content="AI-Powered Smart Retail Platform integrating Computer Vision Face Recognition, Product Classification, Sentiment Analysis, and FAQ Chatbot.">
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="brand">
+      <div class="brand-logo">AI</div>
+      <div>
+        <h1 class="brand-title">Smart Retail Intelligence</h1>
+        <p class="brand-subtitle">AI-Powered In-Store Analytics & Customer Support Platform</p>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="#vision-section" class="nav-item active">Computer Vision</a>
+      <a href="#nlp-section" class="nav-item">Sentiment NLP</a>
+      <a href="#chatbot-section" class="nav-item">Support Chatbot</a>
+      <a href="/docs" target="_blank" class="nav-item">Swagger API Docs ↗</a>
+    </div>
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      API Gateway Active
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Top Key Metrics Cards -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-info">
+          <h4>Total Customer Visits</h4>
+          <div class="stat-value" id="stat-total-visits">0</div>
+        </div>
+        <div class="stat-icon icon-purple">👤</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h4>Positive Feedback Ratio</h4>
+          <div class="stat-value" id="stat-positive-ratio">0%</div>
+        </div>
+        <div class="stat-icon icon-emerald">⭐</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h4>Top Product Category</h4>
+          <div class="stat-value" id="stat-top-product">Groceries</div>
+        </div>
+        <div class="stat-icon icon-cyan">🛍️</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <h4>Automated Bot Resolution</h4>
+          <div class="stat-value" id="stat-bot-queries">0</div>
+        </div>
+        <div class="stat-icon icon-amber">🤖</div>
+      </div>
+    </section>
+
+    <!-- Main Modules Grid -->
+    <div class="modules-grid" id="vision-section">
+
+      <!-- Module A: Face Recognition & Visit Logging -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title">📷 Returning Customer Recognition</h2>
+          <span class="card-badge">OpenCV & Embeddings</span>
+        </div>
+        
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <button class="btn btn-primary" style="flex: 1; font-size: 0.8rem;" id="btn-sample-face">Load Demo Customer Face</button>
+          <button class="btn" style="background: rgba(255,255,255,0.08); color: white; flex: 1; font-size: 0.8rem;" id="btn-webcam">Simulate Webcam Snapshot</button>
+        </div>
+
+        <input type="file" id="face-file-input" accept="image/*" style="display: none;">
+        <div class="dropzone" id="face-dropzone">
+          <div class="dropzone-icon">📷</div>
+          <p>Click or drag & drop a customer photo to recognize</p>
+        </div>
+        <img id="face-preview" class="preview-box" style="display: none;" alt="Face Preview">
+
+        <div id="face-result-card" style="display: none; background: rgba(0,0,0,0.3); border: var(--glass-border); padding: 1rem; border-radius: var(--radius-md);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <h3 id="customer-name" style="color: var(--primary-light); font-size: 1.1rem;">Customer Name</h3>
+            <span id="customer-badge" class="sentiment-badge sentiment-positive">VIP</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);" id="customer-details">ID: CUST-1001 | Total Visits: 15</p>
+          <p style="font-size: 0.85rem; color: var(--accent-emerald); margin-top: 0.4rem;" id="customer-msg">Visit logged with timestamp!</p>
+        </div>
+      </article>
+
+      <!-- Module B: Product Category Classifier -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title">🏷️ Product Category Classifier</h2>
+          <span class="card-badge">Random Forest / MobileNet</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+          <label style="font-size: 0.85rem; color: var(--text-muted);">Category Mode:</label>
+          <select id="product-category-hint" class="input-field" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; max-width: 200px;">
+            <option value="">Auto Detect (ML Model)</option>
+            <option value="clothing">Clothing</option>
+            <option value="shoes">Shoes</option>
+            <option value="bags">Bags</option>
+            <option value="electronics">Electronics</option>
+            <option value="groceries">Groceries</option>
+          </select>
+        </div>
+
+        <input type="file" id="product-file-input" accept="image/*" style="display: none;">
+        <div class="dropzone" id="product-dropzone">
+          <div class="dropzone-icon">📦</div>
+          <p>Upload a product image (Shoes, Bags, Electronics, Clothing, Groceries)</p>
+        </div>
+        <img id="product-preview" class="preview-box" style="display: none;" alt="Product Preview">
+
+        <div id="product-result-box" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h3 style="font-size: 1rem; color: var(--text-muted);">Predicted Category: <span id="pred-cat-name" style="color: var(--accent-cyan); font-weight: 700;">Shoes</span></h3>
+            <span id="pred-confidence" style="font-size: 0.85rem; color: var(--accent-emerald); font-weight: 600;">91.5% Confidence</span>
+          </div>
+          <div class="prob-list" id="prob-bars">
+            <!-- Dynamic bars inserted via JS -->
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Second Row Grid: NLP & Chatbot -->
+    <div class="modules-grid" id="nlp-section">
+
+      <!-- Module C: Sentiment Analysis Playground -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title">💬 Customer Sentiment Analysis</h2>
+          <span class="card-badge">TF-IDF + NLP</span>
+        </div>
+
+        <textarea id="sentiment-input" class="input-field" rows="4" placeholder="Enter customer review or chat feedback here... (e.g. 'The product arrived quickly and quality is top notch!')"></textarea>
+        
+        <button class="btn btn-primary" id="btn-analyze-sentiment">Analyze Review Sentiment</button>
+
+        <div id="sentiment-result-card" style="display: none; background: rgba(0,0,0,0.3); border: var(--glass-border); padding: 1rem; border-radius: var(--radius-md);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.9rem; color: var(--text-muted);">Sentiment Classification:</span>
+            <span id="sentiment-label" class="sentiment-badge sentiment-positive">Positive</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Confidence Score: <strong id="sentiment-score" style="color: white;">95%</strong></p>
+          <div style="font-size: 0.75rem; color: var(--text-dark); margin-top: 0.4rem;" id="sentiment-cleaned">Cleaned Tokens: ...</div>
+        </div>
+      </article>
+
+      <!-- Module D: Support Chatbot Widget -->
+      <article class="card" id="chatbot-section">
+        <div class="card-header">
+          <h2 class="card-title">🤖 AI Support Chatbot</h2>
+          <span class="card-badge">Hybrid Intent Engine</span>
+        </div>
+
+        <div class="chat-window">
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-bubble bot">
+              Hi! I'm your Smart Retail Assistant. You can ask me about order tracking, store hours, return policy, or payment methods!
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <input type="text" id="chat-input" class="input-field" placeholder="Ask a question (e.g., 'What is your return policy?')">
+            <button class="btn btn-primary" id="btn-chat-send">Send</button>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Live Customer Visit Log Table -->
+    <article class="card">
+      <div class="card-header">
+        <h2 class="card-title">📋 Live Customer Visit Log</h2>
+        <span class="card-badge">Real-time Feed</span>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer ID</th>
+              <th>Customer Name</th>
+              <th>Membership Tier</th>
+              <th>Timestamp</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="visit-log-rows">
+            <!-- Inserted dynamically via JS -->
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+  </main>
+
+  <footer>
+    <p>Smart Retail & Customer Intelligence Platform • FastAPI & OpenCV & Scikit-Learn • Production Capstone System</p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
