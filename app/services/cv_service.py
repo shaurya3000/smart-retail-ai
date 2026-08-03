@@ -158,34 +158,29 @@ class ComputerVisionService:
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             
             edges = cv2.Canny(gray, 50, 150)
-            edge_density = np.mean(edges > 0)
+            edge_density = float(np.mean(edges > 0))
             
-            green_mask = cv2.inRange(hsv, (30, 30, 30), (90, 255, 255))
-            red_mask1 = cv2.inRange(hsv, (0, 50, 50), (12, 255, 255))
-            red_mask2 = cv2.inRange(hsv, (165, 50, 50), (180, 255, 255))
-            yellow_mask = cv2.inRange(hsv, (15, 60, 60), (35, 255, 255))
-            produce_mask = green_mask | red_mask1 | red_mask2 | yellow_mask
-            
-            green_ratio = np.mean(green_mask > 0)
-            produce_ratio = np.mean(produce_mask > 0)
-            
-            top_half = gray[:h_f//2, :]
-            bot_half = gray[h_f//2:, :]
-            sole_contrast = float(abs(np.mean(bot_half) - np.mean(top_half)) / 255.0)
+            sobel_x = cv2.Sobel(gray, cv2.CV_32F, 1, 0, ksize=3)
+            sobel_y = cv2.Sobel(gray, cv2.CV_32F, 0, 1, ksize=3)
+            edge_grid_score = float((np.mean(abs(sobel_x)) + np.mean(abs(sobel_y))) / 255.0)
 
-            # 1. Groceries & Produce Check (highest priority for color/vegetables/fruits)
-            if produce_ratio > 0.06 or green_ratio > 0.03:
+            green_mask = cv2.inRange(hsv, (35, 50, 50), (85, 255, 255))
+            green_ratio = float(np.mean(green_mask > 0))
+
+            # Detect Laptops, MacBooks, Keyboards, Screens, Monitors, Phones:
+            # Laptops feature high keyboard/screen edge density, rectangular screen frame, and green_ratio < 0.15
+            is_electronics = (edge_grid_score > 0.035 and aspect_ratio >= 0.95) or \
+                             (edge_density > 0.035 and aspect_ratio >= 1.05) or \
+                             (aspect_ratio >= 1.15 and edge_grid_score > 0.025)
+
+            if is_electronics and green_ratio < 0.15:
+                cat_scores["electronics"] += 5.0
+            elif green_ratio > 0.08 or (np.mean(cv2.inRange(hsv, (15, 80, 80), (85, 255, 255)) > 0) > 0.20):
                 cat_scores["groceries"] += 5.0
-            # 2. Shoes / Footwear Check (horizontal shape + sole contrast)
-            elif aspect_ratio >= 1.25 and sole_contrast > 0.12:
+            elif aspect_ratio >= 1.28:
                 cat_scores["shoes"] += 4.5
-            # 3. Bags / Backpacks Check (vertical tall proportions)
             elif aspect_ratio < 0.88:
                 cat_scores["bags"] += 4.5
-            # 4. Electronics Check (Laptops, MacBooks, Screens, Phones - high edge density & wide/metallic geometry)
-            elif (aspect_ratio >= 1.05 and edge_density > 0.025) or aspect_ratio >= 1.20:
-                cat_scores["electronics"] += 4.5
-            # 5. Apparel & Clothing Check
             else:
                 cat_scores["clothing"] += 4.0
 
