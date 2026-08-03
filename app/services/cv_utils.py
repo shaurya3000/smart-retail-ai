@@ -1,28 +1,17 @@
 import cv2
 import numpy as np
-import base64
-from PIL import Image
-import io
-from typing import Tuple, List, Dict, Any, Optional
+from typing import Tuple, List, Optional
 
-def decode_image_bytes(image_bytes: bytes) -> np.ndarray:
-    """Decodes raw byte buffer into an OpenCV BGR numpy array."""
-    nparr = np.frombuffer(image_bytes, np.uint8)
+def decode_image_bytes(img_bytes: bytes) -> np.ndarray:
+    """Decodes raw byte buffer into an OpenCV BGR numpy array image."""
+    nparr = np.frombuffer(img_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     if img is None:
-        pil_img = Image.open(io.BytesIO(image_bytes)).convert('RGB')
-        img = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+        raise ValueError("Failed to decode image bytes into OpenCV frame.")
     return img
 
-def decode_base64_image(base64_str: str) -> np.ndarray:
-    """Decodes a base64 encoded string into an OpenCV BGR image."""
-    if "," in base64_str:
-        base64_str = base64_str.split(",")[1]
-    img_bytes = base64.b64decode(base64_str)
-    return decode_image_bytes(img_bytes)
-
 def to_grayscale(img: np.ndarray) -> np.ndarray:
-    """Converts a BGR image to Grayscale."""
+    """Converts a BGR image to Grayscale format."""
     if len(img.shape) == 2:
         return img
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -57,7 +46,6 @@ def detect_faces_haar(img: np.ndarray) -> List[Tuple[int, int, int, int]]:
     except Exception:
         pass
         
-    # Robust fallback face region
     h, w = img.shape[:2]
     return [(int(w * 0.25), int(h * 0.15), int(w * 0.5), int(h * 0.5))]
 
@@ -119,7 +107,6 @@ def extract_face_embedding(img: np.ndarray, face_box: Optional[Tuple[int, int, i
     resized = resize_image(face_crop, (128, 128))
     gray = to_grayscale(resized)
     
-    # Feature vector derived from spatial intensity & gradient histograms
     gx = cv2.Sobel(gray, cv2.CV_32F, 1, 0, ksize=3)
     gy = cv2.Sobel(gray, cv2.CV_32F, 0, 1, ksize=3)
     mag, angle = cv2.cartToPolar(gx, gy, angleInDegrees=True)
@@ -132,3 +119,13 @@ def extract_face_embedding(img: np.ndarray, face_box: Optional[Tuple[int, int, i
     if norm > 0:
         vec = vec / norm
     return vec[:128]
+
+def cosine_distance(vec1: np.ndarray, vec2: np.ndarray) -> float:
+    """Computes Cosine Distance between two 1D feature vectors."""
+    dot = float(np.dot(vec1, vec2))
+    norm1 = float(np.linalg.norm(vec1))
+    norm2 = float(np.linalg.norm(vec2))
+    if norm1 == 0 or norm2 == 0:
+        return 1.0
+    sim = dot / (norm1 * norm2)
+    return max(0.0, min(1.0, 1.0 - sim))
