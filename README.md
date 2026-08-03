@@ -25,7 +25,7 @@ Computer Vision Module               NLP Module                           Chatbo
 - OpenCV frame preprocessing        - Lowercasing, punctuation,          - Rule-based exact keyword match
 - 128D HOG/landmark face encodings   stopword filtering                   - TF-IDF + LogisticRegression
 - Cosine distance matching          - TF-IDF vectorization                 ML intent classification fallback
-- Random Forest product classifier  - Logistic Regression sentiment      - FAQ intent knowledgebase
+- MobileNetV2 product classifier    - Logistic Regression sentiment      - FAQ intent knowledgebase
        |                                    |                                    |
        +------------------------------------+------------------------------------+
                                             |
@@ -37,12 +37,42 @@ Computer Vision Module               NLP Module                           Chatbo
 
 ---
 
-## 📚 2. Syllabus & Module Mapping
+## 📸 2. Live Application Modules & UI Screenshots
+
+### 👤 Module A: Customer Recognition & Visit Logger
+Biometric face check-in system extracting 128D HOG facial encodings, matching against registered profiles (`face_db.pkl`), and logging persistent store visits with timestamps and VIP loyalty tiers.
+
+![Customer Recognition & Visit Logger](assets/screenshots/face_recognition.png)
+
+---
+
+### 💬 Module B: Customer Feedback Sentiment NLP Engine
+TF-IDF + Calibrated Logistic Regression NLP pipeline categorizing customer feedback into Positive 😄, Neutral 😐, or Negative 😞 with sharp confidence probability breakdowns.
+
+![Customer Feedback Sentiment Engine](assets/screenshots/sentiment_analysis_2.png)
+
+---
+
+### 🤖 Module B: AI Retail Customer Support Assistant
+Dual-Phase Hybrid Support Chatbot combining high-precision Rule-Based FAQ pattern matching (Phase 1) with an ML Intent Classifier fallback (Phase 2).
+
+![AI Retail Support Chatbot Assistant](assets/screenshots/chatbot_assistant.png)
+
+---
+
+### 📊 Module C: Executive Retail Intelligence & Telemetry Dashboard
+Real-time executive dashboard monitoring total store visits, registered VIP customers, chatbot query volume, feedback sentiment breakdown, and top FAQ inquiries.
+
+![Executive Retail Intelligence Dashboard](assets/screenshots/executive_dashboard.png)
+
+---
+
+## 📚 3. Syllabus & Module Mapping
 
 | Syllabus Topic | Project Module Implementation | Deliverable / File |
 | :--- | :--- | :--- |
 | **OpenCV Basics** | Frame preprocessing, grayscale, resizing, Gaussian blur, Canny edge detection, Haar face bounding box | `app/services/cv_utils.py` |
-| **Image Classification** | 5-class product classifier (Clothing, Shoes, Electronics, Bags, Groceries) | `product_classifier.pkl` |
+| **Image Classification** | PyTorch MobileNetV2 Deep Transfer Learning for 5 retail categories (Shoes, Clothing, Electronics, Bags, Groceries) | `app/services/cv_service.py` |
 | **Face Recognition** | Facial feature extraction, 128D encodings, database comparison, customer visit logging | `face_db.pkl`, `cv_service.py` |
 | **Text Preprocessing** | Lowercasing, punctuation removal, stopword filtering, tokenization | `nlp_service.py` |
 | **Sentiment Analysis** | Customer feedback classifier (Positive / Neutral / Negative + confidence) | `sentiment_model.pkl`, `vectorizer.pkl` |
@@ -54,101 +84,76 @@ Computer Vision Module               NLP Module                           Chatbo
 
 ---
 
-## ⚡ 3. Quick Start & Setup Guide
+## ⚡ 4. Quick Start & Setup Guide
 
-### Prerequisites
-- Python 3.9+ installed
-- Docker (optional, for containerized run)
-
-### Step 1: Clone Repository & Create Virtual Environment
+### Step 1: Clone Repository & Install Dependencies
 ```bash
-git clone https://github.com/your-org/smart-retail-ai.git
+git clone https://github.com/shaurya3000/smart-retail-ai.git
 cd smart-retail-ai
-python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On Linux/macOS:
-source venv/bin/activate
-```
-
-### Step 2: Install Dependencies & Train Models
-```bash
 pip install -r requirements.txt
 python scripts/train_all_models.py
 ```
 
-### Step 3: Run FastAPI REST Gateway
+### Step 2: Run FastAPI REST Gateway (Port 8000)
 ```bash
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 Access interactive Swagger API Docs at: **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)**
 
-### Step 4: Run Streamlit Interactive Dashboard
-In a new terminal window:
+### Step 3: Run Streamlit Interactive Dashboard (Port 8501)
 ```bash
-streamlit run dashboard.py
+python -m streamlit run dashboard.py
 ```
-Open your browser at: **[http://localhost:8501](http://localhost:8501)**
+Access live visual web app at: **[http://localhost:8501](http://localhost:8501)**
 
 ---
 
-## 🧪 4. Running Automated Tests
+## 🧪 5. Running Automated Tests
 
-Run the comprehensive unit test suite:
+Run the comprehensive 8/8 unit test suite:
 ```bash
 python tests/run_tests.py
 ```
-*(Tests cover pipeline initialization, CV product classification, face recognition, NLP sentiment analysis, chatbot rule/ML fallback matching, and aggregate dashboard telemetry).*
 
 ---
 
-## 🐳 5. Docker Deployment
+## 🐳 6. Docker Deployment
 
-Deploy the entire platform (API + Streamlit UI) using Docker Compose:
+Deploy containerized services using Docker Compose:
 ```bash
 docker-compose up --build
 ```
-- API Gateway running on: `http://localhost:8000`
-- Streamlit Dashboard running on: `http://localhost:8501`
 
 ---
 
-## 🔐 6. Ethics, Data Privacy & Bias in Retail Facial Recognition
+## 🔐 7. Ethics, Data Privacy & Bias in Retail Facial Recognition
 
-Facial recognition technology in retail environments offers significant operational efficiency and customer personalization benefits, but it also demands strict ethical safeguards, data privacy compliance, and bias mitigation strategies.
-
-### A. Informed Consent & Biometric Privacy Compliance
-- **Opt-In Requirement**: Facial check-in MUST operate on an explicit opt-in basis. Retail customers must proactively register and consent before their biometric data is processed.
-- **No Raw Image Storage**: The system stores ONLY mathematical vector encodings (128-dimensional floating point hash vectors) in `face_db.pkl`. Raw facial images captured at store check-in counters are discarded immediately after feature extraction.
-- **Regulatory Adherence**: Designed to align with **GDPR (Article 9 - Processing of Special Categories of Data)** and **CCPA/CPRA (Biometric Information Protection)**. Customers retain the right to request full deletion of their biometric encodings at any time.
-
-### B. Algorithmic Bias & Demographic Fairness
-- **Demographic Parity**: Facial recognition algorithms can exhibit accuracy variance across demographics (age, gender, ethnicity) if trained on non-representative datasets.
-- **Mitigation Protocols**:
-  1. Enforcing strict similarity distance thresholds (`threshold = 0.85`) to minimize False Acceptance Rates (FAR).
-  2. Providing fallback standard guest check-in routes whenever facial matching confidence falls below acceptable thresholds.
-  3. Routine auditing of false-match rates across diverse customer demographics.
+- **100% Explicit Opt-In**: Biometric check-in operates on an explicit opt-in basis. Unregistered visitors remain anonymous guests (`GUEST_3682`).
+- **Zero Raw Image Storage**: Raw photos are discarded immediately after feature extraction — ONLY 128D mathematical hash vectors are stored in `face_db.pkl`.
+- **GDPR & CCPA Compliance**: Aligns with GDPR Article 9 and CCPA biometric protections.
+- **Demographic Bias Mitigation**: Strict similarity distance thresholds (0.85) and fallback guest check-in routes minimize false acceptance rates across diverse demographics.
 
 ---
 
-## 📁 7. Repository Structure
+## 📁 8. Repository Structure
 
 ```
 smart-retail-ai/
 ├── app/
-│   ├── main.py                  # FastAPI Application Entrypoint & Middleware
+│   ├── main.py                  # FastAPI Gateway Entrypoint & Middleware
 │   ├── config.py                # Configuration Settings & Security
 │   ├── schemas.py               # Pydantic Data Validation Schemas
 │   ├── pipeline.py              # Unified Model Engine (Startup loader)
 │   ├── routers/                 # Vision, NLP, Chatbot API Routers
 │   ├── services/                # OpenCV, Sentiment, Chatbot business logic
 │   └── models/                  # Serialized Model Artifacts (.pkl)
+├── assets/screenshots/          # Live UI Application Screenshots
 ├── dashboard.py                 # Streamlit Interactive Dashboard UI
 ├── notebooks/                   # Training & EDA Jupyter Notebooks
 ├── data/                        # Datasets (reviews.csv, intents.json)
-├── tests/                       # Automated Test Suites
+├── tests/                       # Automated Test Suite (run_tests.py)
 ├── scripts/                     # Automated model training script
 ├── Dockerfile                   # Docker build instructions
 ├── docker-compose.yml           # Service orchestration
-└── README.md                    # Project Documentation
+└── README.md                    # Project Documentation & Screenshots
 ```
