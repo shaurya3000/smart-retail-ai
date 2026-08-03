@@ -1,4 +1,13 @@
 import streamlit as st
+
+# Set Page Configuration (MUST be the very first Streamlit command)
+st.set_page_config(
+    page_title="Smart Retail Intelligence Platform",
+    page_icon="🛍️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 import pandas as pd
 import numpy as np
 import requests
@@ -16,14 +25,6 @@ try:
 except Exception as p_err:
     PIPELINE_AVAILABLE = False
     print(f"Pipeline import warning: {p_err}")
-
-# Set Page Configuration
-st.set_page_config(
-    page_title="Smart Retail Intelligence Platform",
-    page_icon="🛍️",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
 # Custom CSS for Premium Glassmorphism Design
 st.markdown("""
