@@ -185,14 +185,17 @@ class ComputerVisionService:
                              (edge_density > 0.035 and aspect_ratio >= 1.05) or \
                              (aspect_ratio >= 1.15 and edge_grid_score > 0.025)
 
-            # 2. Footwear / Shoes Check (Sneakers, Boots, Cleats - sole contrast & footwear aspect ratio)
-            is_shoes = (sole_contrast > 0.07 and aspect_ratio >= 0.95) or (aspect_ratio >= 1.20)
+            # 2. Footwear / Shoes Check (Sneakers, Boots, Cleats, Sandals - sole contrast & footwear aspect ratio)
+            is_shoes = (sole_contrast > 0.05 and aspect_ratio >= 0.90) or (aspect_ratio >= 1.15)
+
+            # 3. Genuine Produce Green Vegetables & Fruits Check (Excludes brown/tan floors)
+            is_groceries = (green_ratio > 0.08)
 
             if is_electronics and green_ratio < 0.15:
                 cat_scores["electronics"] += 5.0
             elif is_shoes and green_ratio < 0.15:
                 cat_scores["shoes"] += 5.0
-            elif green_ratio > 0.08 or (np.mean(cv2.inRange(roi_hsv if roi_hsv.size > 0 else hsv, (15, 80, 80), (85, 255, 255)) > 0) > 0.20):
+            elif is_groceries:
                 cat_scores["groceries"] += 5.0
             elif aspect_ratio < 0.88:
                 cat_scores["bags"] += 4.5
