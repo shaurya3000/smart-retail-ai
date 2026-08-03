@@ -1,6 +1,13 @@
 # AI-Powered Smart Retail & Customer Intelligence Platform
 
-A production-grade, integrated AI solution for retail and e-commerce businesses. The platform combines Computer Vision (biometric face check-in & 5-class product classification), Natural Language Processing (customer feedback sentiment analysis & hybrid FAQ support chatbot), MLOps (unified model pipeline & FastAPI gateway), and an Interactive Streamlit Dashboard.
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Web_App-Click_to_Open-ff4b4b?style=for-the-badge&logo=streamlit)](https://github.com/shaurya3000/smart-retail-ai)
+[![FastAPI](https://img.shields.io/badge/API_Gateway-FastAPI-009688?style=for-the-badge&logo=fastapi)](https://github.com/shaurya3000/smart-retail-ai)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python)](https://github.com/shaurya3000/smart-retail-ai)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)](https://github.com/shaurya3000/smart-retail-ai)
+
+> 🌐 **Live Web Application Demo Link**:  
+> Evaluators and reviewers can open the live application or deploy it with 1-click:  
+> 👉 **[https://github.com/shaurya3000/smart-retail-ai](https://github.com/shaurya3000/smart-retail-ai)**
 
 ---
 
@@ -67,93 +74,36 @@ Real-time executive dashboard monitoring total store visits, registered VIP cust
 
 ---
 
-## 📚 3. Syllabus & Module Mapping
+## 📊 3. Project Presentation Deliverables
 
-| Syllabus Topic | Project Module Implementation | Deliverable / File |
-| :--- | :--- | :--- |
-| **OpenCV Basics** | Frame preprocessing, grayscale, resizing, Gaussian blur, Canny edge detection, Haar face bounding box | `app/services/cv_utils.py` |
-| **Image Classification** | PyTorch MobileNetV2 Deep Transfer Learning for 5 retail categories (Shoes, Clothing, Electronics, Bags, Groceries) | `app/services/cv_service.py` |
-| **Face Recognition** | Facial feature extraction, 128D encodings, database comparison, customer visit logging | `face_db.pkl`, `cv_service.py` |
-| **Text Preprocessing** | Lowercasing, punctuation removal, stopword filtering, tokenization | `nlp_service.py` |
-| **Sentiment Analysis** | Customer feedback classifier (Positive / Neutral / Negative + confidence) | `sentiment_model.pkl`, `vectorizer.pkl` |
-| **Chatbot Basics** | Hybrid FAQ bot (Rule-based exact matching + ML intent fallback) | `intents.json`, `chatbot_model.pkl` |
-| **ML Pipelines** | Unified model engine loading all models once at startup | `app/pipeline.py` |
-| **Model Serialization** | Joblib / Pickle serialization of models, vectorizers, and face databases | `app/models/` |
-| **Flask / FastAPI** | High-performance REST API gateway with Pydantic request/response validation | `app/main.py`, `app/routers/` |
-| **API Deployment** | Docker containerization, multi-service docker-compose, GitHub Actions CI/CD | `Dockerfile`, `docker-compose.yml`, `deploy.yml` |
+- 📄 **Slide-by-Slide Presentation Report**: [`DEMO_PRESENTATION.md`](https://github.com/shaurya3000/smart-retail-ai/blob/master/DEMO_PRESENTATION.md)
+- 📊 **Downloadable PowerPoint Deck**: [`Smart_Retail_Platform_Presentation_Final.pptx`](https://github.com/shaurya3000/smart-retail-ai/raw/master/Smart_Retail_Platform_Presentation_Final.pptx)
 
 ---
 
-## ⚡ 4. Quick Start & Setup Guide
+## ⚡ 4. Quick Start & Setup Guide for Evaluators
 
-### Step 1: Clone Repository & Install Dependencies
+### Option 1: Local Execution (3 Commands)
+```bash
+# 1. Clone repository
+git clone https://github.com/shaurya3000/smart-retail-ai.git
+cd smart-retail-ai
+
+# 2. Install dependencies & initialize models
+pip install -r requirements.txt
+python scripts/train_all_models.py
+
+# 3. Run dashboard
+python -m streamlit run dashboard.py
+```
+Open **[http://localhost:8501](http://localhost:8501)** in any web browser.
+
+---
+
+### Option 2: 1-Click Docker Container Setup
 ```bash
 git clone https://github.com/shaurya3000/smart-retail-ai.git
 cd smart-retail-ai
-pip install -r requirements.txt
-python scripts/train_all_models.py
-```
-
-### Step 2: Run FastAPI REST Gateway (Port 8000)
-```bash
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-```
-Access interactive Swagger API Docs at: **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)**
-
-### Step 3: Run Streamlit Interactive Dashboard (Port 8501)
-```bash
-python -m streamlit run dashboard.py
-```
-Access live visual web app at: **[http://localhost:8501](http://localhost:8501)**
-
----
-
-## 🧪 5. Running Automated Tests
-
-Run the comprehensive 8/8 unit test suite:
-```bash
-python tests/run_tests.py
-```
-
----
-
-## 🐳 6. Docker Deployment
-
-Deploy containerized services using Docker Compose:
-```bash
 docker-compose up --build
 ```
-
----
-
-## 🔐 7. Ethics, Data Privacy & Bias in Retail Facial Recognition
-
-- **100% Explicit Opt-In**: Biometric check-in operates on an explicit opt-in basis. Unregistered visitors remain anonymous guests (`GUEST_3682`).
-- **Zero Raw Image Storage**: Raw photos are discarded immediately after feature extraction — ONLY 128D mathematical hash vectors are stored in `face_db.pkl`.
-- **GDPR & CCPA Compliance**: Aligns with GDPR Article 9 and CCPA biometric protections.
-- **Demographic Bias Mitigation**: Strict similarity distance thresholds (0.85) and fallback guest check-in routes minimize false acceptance rates across diverse demographics.
-
----
-
-## 📁 8. Repository Structure
-
-```
-smart-retail-ai/
-├── app/
-│   ├── main.py                  # FastAPI Gateway Entrypoint & Middleware
-│   ├── config.py                # Configuration Settings & Security
-│   ├── schemas.py               # Pydantic Data Validation Schemas
-│   ├── pipeline.py              # Unified Model Engine (Startup loader)
-│   ├── routers/                 # Vision, NLP, Chatbot API Routers
-│   ├── services/                # OpenCV, Sentiment, Chatbot business logic
-│   └── models/                  # Serialized Model Artifacts (.pkl)
-├── assets/screenshots/          # Live UI Application Screenshots
-├── dashboard.py                 # Streamlit Interactive Dashboard UI
-├── notebooks/                   # Training & EDA Jupyter Notebooks
-├── data/                        # Datasets (reviews.csv, intents.json)
-├── tests/                       # Automated Test Suite (run_tests.py)
-├── scripts/                     # Automated model training script
-├── Dockerfile                   # Docker build instructions
-├── docker-compose.yml           # Service orchestration
-└── README.md                    # Project Documentation & Screenshots
-```
+Open **[http://localhost:8501](http://localhost:8501)** in any web browser.
